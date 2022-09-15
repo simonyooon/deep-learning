@@ -1,0 +1,1215 @@
+%!PS-Adobe-3.0
+%%Title: main.py
+%%For: Unknown User
+%%Creator: a2ps version 4.14
+%%CreationDate: Thu Sep 15 00:04:22 2022
+%%BoundingBox: 24 24 571 818
+%%DocumentData: Clean7Bit
+%%Orientation: Landscape
+%%Pages: 2
+%%PageOrder: Ascend
+%%DocumentMedia: A4 595 842 0 () ()
+%%DocumentNeededResources: font Courier
+%%+ font Courier-Bold
+%%+ font Courier-BoldOblique
+%%+ font Courier-Oblique
+%%+ font Helvetica
+%%+ font Helvetica-Bold
+%%+ font Symbol
+%%+ font Times-Bold
+%%+ font Times-Roman
+%%DocumentProcessColors: Black 
+%%DocumentSuppliedResources: procset a2ps-a2ps-hdr
+%%+ procset a2ps-black+white-Prolog
+%%+ encoding ISO-8859-1Encoding
+%%EndComments
+/a2psdict 200 dict def
+a2psdict begin
+%%BeginProlog
+%%Copyright: (c) 1988, 89, 90, 91, 92, 93 Miguel Santana
+%%Copyright: (c) 1995, 96, 97, 98 Akim Demaille, Miguel Santana
+% Check PostScript language level.
+/languagelevel where {
+  pop /gs_languagelevel languagelevel def
+} {
+  /gs_languagelevel 1 def
+} ifelse
+
+% EPSF import as in the Red Book
+/BeginInclude {
+  /b4_Inc_state save def    		% Save state for cleanup
+  /dict_count countdictstack def	% Count objects on dict stack
+  /op_count count 1 sub def		% Count objects on operand stack 
+  userdict begin
+    0 setgray 0 setlinecap
+    1 setlinewidth 0 setlinejoin
+    10 setmiterlimit [ ] 0 setdash newpath
+    gs_languagelevel 1 ne {
+      false setstrokeadjust false setoverprint 
+    } if
+} bind def
+
+/EndInclude {
+  count op_count sub { pos } repeat	% Clean up stacks
+  countdictstack dict_count sub { end } repeat
+  b4_Inc_state restore
+} bind def
+
+/BeginEPSF {
+  BeginInclude
+  /showpage { } def
+} bind def
+
+/EndEPSF {
+  EndInclude
+} bind def
+
+% Page prefeed
+/page_prefeed {         % bool -> -
+  statusdict /prefeed known {
+    statusdict exch /prefeed exch put
+  } {
+    pop
+  } ifelse
+} bind def
+
+/deffont {
+  findfont exch scalefont def
+} bind def
+
+/reencode_font {
+  findfont reencode 2 copy definefont pop def
+} bind def
+
+% Function c-show (str => -)
+% centers text only according to x axis.
+/c-show { 
+  dup stringwidth pop
+  2 div neg 0 rmoveto
+  show
+} bind def
+
+% Function l-show (str => -)
+% prints texts so that it ends at currentpoint
+/l-show {
+  dup stringwidth pop neg 
+  0 
+  rmoveto show
+} bind def
+
+% center-fit show (str w => -)
+% show centered, and scale currentfont so that the width is less than w
+/cfshow {
+  exch dup stringwidth pop
+  % If the title is too big, try to make it smaller
+  3 2 roll 2 copy
+  gt
+  { % if, i.e. too big
+    exch div
+    currentfont exch scalefont setfont
+  } { % ifelse
+    pop pop 
+  }
+  ifelse
+  c-show			% center title
+} bind def
+
+% Return the y size of the current font
+% - => fontsize
+/currentfontsize {
+  currentfont /FontType get 0 eq {
+    currentfont /FontMatrix get 3 get
+  }{
+    currentfont /FontMatrix get 3 get 1000 mul
+  } ifelse
+} bind def
+
+% reencode the font
+% <encoding-vector> <fontdict> -> <newfontdict>
+/reencode { %def
+  dup length 5 add dict begin
+    { %forall
+      % <vector> <key> <val>
+      1 index /FID ne 
+      { def }{ pop pop } ifelse
+    } forall
+    /Encoding exch def % -
+
+    % Use the font's bounding box to determine the ascent, descent,
+    % and overall height; don't forget that these values have to be
+    % transformed using the font's matrix.
+    % We use `load' because sometimes BBox is executable, sometimes not.
+    % Since we need 4 numbers an not an array avoid BBox from being executed
+    /FontBBox load aload pop
+    FontMatrix transform /Ascent exch def pop
+    FontMatrix transform /Descent exch def pop
+    /FontHeight Ascent Descent sub def
+
+    % Get the underline position and thickness if they're defined.
+    % Use 1 if they are not defined.
+    currentdict /FontInfo 2 copy known
+    { get
+      /UnderlinePosition 2 copy % <FontInfo> /UP <FontInfo> /UP
+      2 copy known
+      { get }{ pop pop 1 } ifelse
+      0 exch FontMatrix transform exch pop
+      def % <FontInfo>
+
+      /UnderlineThickness 2 copy % <FontInfo> /UT <FontInfo> /UT
+      2 copy known
+      { get }{ pop pop 1 } ifelse
+      0 exch FontMatrix transform exch pop
+      def % <FontInfo>
+      pop % -
+    }{ pop pop
+    } ifelse
+
+    currentdict
+  end 
+} bind def
+
+% composite fonts for ASCII-EUC mixed strings
+% Version 1.2 1/31/1990
+% Original Ken'ichi HANDA (handa@etl.go.jp)
+% Modified Norio Katayama (katayama@rd.nacsis.ac.jp),1998
+% Extend & Fix Koji Nakamaru (maru@on.cs.keio.ac.jp), 1999
+% Anyone can freely copy, modify, distribute this program.
+
+/copyfont {	% font-dic extra-entry-count  copyfont  font-dic
+	1 index maxlength add dict begin
+	{	1 index /FID ne 2 index /UniqueID ne and
+		{def} {pop pop} ifelse
+	} forall
+	currentdict
+	end
+} bind def
+
+/compositefont { % ASCIIFontName EUCFontName RomanScale RomanOffset Rot(T/F) compositefont font
+    /RomanRotation exch def
+    /RomanOffset exch def
+    /RomanScale exch def
+    userdict /fixeucfont_dict known not {
+	userdict begin
+	    /fixeucfont_dict 2 dict begin
+		/UpperByteEncoding [
+		    16#00 1 16#20 { pop 0 } for
+		    16#21 1 16#28 { 16#20 sub } for
+		    16#29 1 16#2F { pop 0 } for
+		    16#30 1 16#74 { 16#27 sub } for
+		    16#75 1 16#FF { pop 0 } for
+		] def
+	        /LowerByteEncoding [
+		    16#00 1 16#A0 { pop /.notdef } for
+		    16#A1 1 16#FE { 16#80 sub 16 2 string cvrs
+				    (cXX) dup 1 4 -1 roll
+				    putinterval cvn } for
+		    /.notdef
+		] def
+		currentdict
+	    end def
+	end
+    } if
+    findfont dup /FontType get 0 eq {
+	14 dict begin
+	    %
+	    % 7+8 bit EUC font
+	    %
+	    12 dict begin
+		/EUCFont exch def
+		/FontInfo (7+8 bit EUC font) readonly def
+		/PaintType 0 def
+		/FontType 0 def
+		/FontMatrix matrix def
+		% /FontName
+		/Encoding fixeucfont_dict /UpperByteEncoding get def
+		/FMapType 2 def
+		EUCFont /WMode known
+		{ EUCFont /WMode get /WMode exch def }
+		{ /WMode 0 def } ifelse
+		/FDepVector [
+		    EUCFont /FDepVector get 0 get
+		    [ 16#21 1 16#28 {} for 16#30 1 16#74 {} for ]
+		    {
+			13 dict begin
+			    /EUCFont EUCFont def
+			    /UpperByte exch 16#80 add def	
+			    % /FontName
+			    /FontInfo (EUC lower byte font) readonly def
+			    /PaintType 0 def
+			    /FontType 3 def
+			    /FontMatrix matrix def
+			    /FontBBox {0 0 0 0} def
+			    /Encoding
+				fixeucfont_dict /LowerByteEncoding get def
+			    % /UniqueID
+			    % /WMode
+			    /BuildChar {
+				gsave
+				exch dup /EUCFont get setfont
+				/UpperByte get
+				2 string
+				dup 0 4 -1 roll put
+				dup 1 4 -1 roll put
+				dup stringwidth setcharwidth
+				0 0 moveto show
+				grestore
+			    } bind def
+			    currentdict
+			end
+			/lowerbytefont exch definefont
+		    } forall
+		] def
+		currentdict
+	    end
+	    /eucfont exch definefont
+	    exch
+	    findfont 1 copyfont dup begin
+		RomanRotation {
+			/FontMatrix FontMatrix
+			[ 0 RomanScale neg RomanScale 0 RomanOffset neg 0 ]
+			matrix concatmatrix def
+		}{
+			/FontMatrix FontMatrix
+			[ RomanScale 0 0 RomanScale 0 RomanOffset ] matrix concatmatrix
+			def
+			/CDevProc
+			    {pop pop pop pop 0 exch -1000 exch 2 div 880} def
+		} ifelse
+	    end
+	    /asciifont exch definefont
+	    exch
+	    /FDepVector [ 4 2 roll ] def
+	    /FontType 0 def
+	    /WMode 0 def
+	    /FMapType 4 def
+	    /FontMatrix matrix def
+	    /Encoding [0 1] def
+	    /FontBBox {0 0 0 0} def
+%	    /FontHeight 1.0 def % XXXX
+	    /FontHeight RomanScale 1.0 ge { RomanScale }{ 1.0 } ifelse def
+	    /Descent -0.3 def   % XXXX
+	    currentdict
+	end
+	/tmpfont exch definefont
+	pop
+	/tmpfont findfont
+    }{
+	pop findfont 0 copyfont
+    } ifelse
+} def	
+
+/slantfont {	% FontName slant-degree  slantfont  font'
+    exch findfont 1 copyfont begin
+    [ 1 0 4 -1 roll 1 0 0 ] FontMatrix exch matrix concatmatrix
+    /FontMatrix exch def
+    currentdict
+    end
+} def
+
+% Function print line number (<string> # -)
+/# {
+  gsave
+    sx cw mul neg 2 div 0 rmoveto
+    f# setfont
+    c-show
+  grestore
+} bind def
+
+% -------- Some routines to enlight plain b/w printings ---------
+
+% Underline
+% width --
+/dounderline {
+  currentpoint
+  gsave
+    moveto
+    0 currentfont /Descent get currentfontsize mul rmoveto
+    0 rlineto
+    stroke
+  grestore
+} bind def
+
+% Underline a string
+% string --
+/dounderlinestring {
+  stringwidth pop
+  dounderline
+} bind def
+
+/UL {
+  /ul exch store
+} bind def
+
+% Draw a box of WIDTH wrt current font
+% width --
+/dobox {
+  currentpoint
+  gsave
+    newpath
+    moveto
+    0 currentfont /Descent get currentfontsize mul rmoveto
+    dup 0 rlineto
+    0 currentfont /FontHeight get currentfontsize mul rlineto
+    neg 0 rlineto
+    closepath
+    stroke
+  grestore
+} bind def
+
+/BX {
+  /bx exch store
+} bind def
+
+% Box a string
+% string --
+/doboxstring {
+  stringwidth pop
+  dobox
+} bind def
+
+%
+% ------------- Color routines ---------------
+%
+/FG /setrgbcolor load def
+
+% Draw the background
+% width --
+/dobackground {
+  currentpoint
+  gsave
+    newpath
+    moveto
+    0 currentfont /Descent get currentfontsize mul rmoveto
+    dup 0 rlineto
+    0 currentfont /FontHeight get currentfontsize mul rlineto
+    neg 0 rlineto
+    closepath
+    bgcolor aload pop setrgbcolor
+    fill
+  grestore
+} bind def
+
+% Draw bg for a string
+% string --
+/dobackgroundstring {
+  stringwidth pop
+  dobackground
+} bind def
+
+
+/BG {
+  dup /bg exch store
+  { mark 4 1 roll ] /bgcolor exch store } if
+} bind def
+
+
+/Show {
+  bg { dup dobackgroundstring } if
+  ul { dup dounderlinestring } if
+  bx { dup doboxstring } if
+  show
+} bind def
+
+% Function T(ab), jumps to the n-th tabulation in the current line
+/T {
+  cw mul x0 add
+  bg { dup currentpoint pop sub dobackground } if
+  ul { dup currentpoint pop sub dounderline } if
+  bx { dup currentpoint pop sub dobox } if
+  y0 moveto
+} bind def
+
+% Function n: move to the next line
+/n {
+  /y0 y0 bfs sub store
+  x0 y0 moveto
+} bind def
+
+% Function N: show and move to the next line
+/N {
+  Show
+  /y0 y0 bfs sub store
+  x0 y0 moveto
+} bind def
+
+/S {
+  Show
+} bind def
+
+%%BeginResource: procset a2ps-a2ps-hdr 2.0 2
+%%Copyright: (c) 1988, 89, 90, 91, 92, 93 Miguel Santana
+%%Copyright: (c) 1995, 96, 97, 98 Akim Demaille, Miguel Santana
+% Function title: prints page header.
+% <ct> <rt> <lt> are passed as argument
+/title { 
+  % 1. Draw the background
+  x v get y v get moveto
+  gsave
+    0 th 2 div neg rmoveto 
+    th setlinewidth
+    0.95 setgray
+    pw 0 rlineto stroke
+  grestore
+  % 2. Border it
+  gsave
+    0.7 setlinewidth
+    pw 0 rlineto
+    0 th neg rlineto
+    pw neg 0 rlineto
+    closepath stroke
+  grestore
+  % stk: ct rt lt
+  x v get y v get th sub 1 add moveto
+%%IncludeResource: font Helvetica
+  fHelvetica fnfs 0.8 mul scalefont setfont
+  % 3. The left title
+  gsave
+    dup stringwidth pop fnfs 0.8 mul add exch % leave space took on stack
+    fnfs 0.8 mul hm rmoveto
+    show			% left title
+  grestore
+  exch
+  % stk: ct ltw rt
+  % 4. the right title
+  gsave
+    dup stringwidth pop fnfs 0.8 mul add exch % leave space took on stack
+    dup
+    pw exch stringwidth pop fnfs 0.8 mul add sub
+    hm
+    rmoveto
+    show			% right title
+  grestore
+  % stk: ct ltw rtw
+  % 5. the center title
+  gsave
+    pw 3 1 roll
+    % stk: ct pw ltw rtw
+    3 copy 
+    % Move to the center of the left room
+    sub add 2 div hm rmoveto
+    % What is the available space in here?
+    add sub fnfs 0.8 mul sub fnfs 0.8 mul sub
+    % stk: ct space_left
+%%IncludeResource: font Helvetica-Bold
+  fHelvetica-Bold fnfs scalefont setfont
+    cfshow
+  grestore
+} bind def
+
+% Function border: prints virtual page border
+/border { %def
+  gsave				% print four sides
+    0 setgray
+    x v get y v get moveto
+    0.7 setlinewidth		% of the square
+    pw 0 rlineto
+    0 ph neg rlineto
+    pw neg 0 rlineto
+    closepath stroke
+  grestore
+} bind def
+
+% Function water: prints a water mark in background
+/water { %def
+  gsave
+    scx scy moveto rotate
+%%IncludeResource: font Times-Bold
+  fTimes-Bold 100 scalefont setfont
+    .97 setgray
+    dup stringwidth pop 2 div neg -50 rmoveto
+    show
+  grestore
+} bind def
+
+% Function rhead: prints the right header
+/rhead {  %def
+  lx ly moveto
+  fHelvetica fnfs 0.8 mul scalefont setfont
+  l-show
+} bind def
+
+% Function footer (cf rf lf -> -)
+/footer {
+  fHelvetica fnfs 0.8 mul scalefont setfont
+  dx dy moveto
+  show
+
+  snx sny moveto
+  l-show
+  
+  fnx fny moveto
+  c-show
+} bind def
+%%EndResource
+%%BeginResource: procset a2ps-black+white-Prolog 2.0 1
+
+% Function T(ab), jumps to the n-th tabulation in the current line
+/T { 
+  cw mul x0 add y0 moveto
+} bind def
+
+% Function n: move to the next line
+/n { %def
+  /y0 y0 bfs sub store
+  x0 y0 moveto
+} bind def
+
+% Function N: show and move to the next line
+/N {
+  Show
+  /y0 y0 bfs sub store
+  x0 y0 moveto
+}  bind def
+
+/S {
+  Show
+} bind def
+
+/p {
+  false UL
+  false BX
+  fCourier bfs scalefont setfont
+  Show
+} bind def
+
+/sy {
+  false UL
+  false BX
+  fSymbol bfs scalefont setfont
+  Show
+} bind def
+
+/k {
+  false UL
+  false BX
+  fCourier-Oblique bfs scalefont setfont
+  Show
+} bind def
+
+/K {
+  false UL
+  false BX
+  fCourier-Bold bfs scalefont setfont
+  Show
+} bind def
+
+/c {
+  false UL
+  false BX
+  fCourier-Oblique bfs scalefont setfont
+  Show
+} bind def
+
+/C {
+  false UL
+  false BX
+  fCourier-BoldOblique bfs scalefont setfont
+  Show 
+} bind def
+
+/l {
+  false UL
+  false BX
+  fHelvetica bfs scalefont setfont
+  Show
+} bind def
+
+/L {
+  false UL
+  false BX
+  fHelvetica-Bold bfs scalefont setfont
+  Show 
+} bind def
+
+/str{
+  false UL
+  false BX
+  fTimes-Roman bfs scalefont setfont
+  Show
+} bind def
+
+/e{
+  false UL
+  true BX
+  fHelvetica-Bold bfs scalefont setfont
+  Show
+} bind def
+
+%%EndResource
+%%EndProlog
+%%BeginSetup
+%%IncludeResource: font Courier
+%%IncludeResource: font Courier-Oblique
+%%IncludeResource: font Courier-Bold
+%%IncludeResource: font Times-Roman
+%%IncludeResource: font Symbol
+%%IncludeResource: font Courier-BoldOblique
+%%BeginResource: encoding ISO-8859-1Encoding
+/ISO-8859-1Encoding [
+/.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef 
+/.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef 
+/.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef 
+/.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef 
+/space /exclam /quotedbl /numbersign /dollar /percent /ampersand /quoteright 
+/parenleft /parenright /asterisk /plus /comma /minus /period /slash 
+/zero /one /two /three /four /five /six /seven 
+/eight /nine /colon /semicolon /less /equal /greater /question 
+/at /A /B /C /D /E /F /G 
+/H /I /J /K /L /M /N /O 
+/P /Q /R /S /T /U /V /W 
+/X /Y /Z /bracketleft /backslash /bracketright /asciicircum /underscore 
+/quoteleft /a /b /c /d /e /f /g 
+/h /i /j /k /l /m /n /o 
+/p /q /r /s /t /u /v /w 
+/x /y /z /braceleft /bar /braceright /asciitilde /.notdef 
+/.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef 
+/.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef 
+/.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef 
+/.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef 
+/space /exclamdown /cent /sterling /currency /yen /brokenbar /section 
+/dieresis /copyright /ordfeminine /guillemotleft /logicalnot /hyphen /registered /macron 
+/degree /plusminus /twosuperior /threesuperior /acute /mu /paragraph /bullet 
+/cedilla /onesuperior /ordmasculine /guillemotright /onequarter /onehalf /threequarters /questiondown 
+/Agrave /Aacute /Acircumflex /Atilde /Adieresis /Aring /AE /Ccedilla 
+/Egrave /Eacute /Ecircumflex /Edieresis /Igrave /Iacute /Icircumflex /Idieresis 
+/Eth /Ntilde /Ograve /Oacute /Ocircumflex /Otilde /Odieresis /multiply 
+/Oslash /Ugrave /Uacute /Ucircumflex /Udieresis /Yacute /Thorn /germandbls 
+/agrave /aacute /acircumflex /atilde /adieresis /aring /ae /ccedilla 
+/egrave /eacute /ecircumflex /edieresis /igrave /iacute /icircumflex /idieresis 
+/eth /ntilde /ograve /oacute /ocircumflex /otilde /odieresis /divide 
+/oslash /ugrave /uacute /ucircumflex /udieresis /yacute /thorn /ydieresis 
+] def
+%%EndResource
+% Initialize page description variables.
+/sh 595 def
+/sw 842 def
+/llx 24 def
+/urx 818 def
+/ury 571 def
+/lly 24 def
+/#copies 1 def
+/th 15.000000 def
+/fnfs 11 def
+/bfs 8.005733 def
+/cw 4.803440 def
+
+% Dictionary for ISO-8859-1 support
+/iso1dict 8 dict begin
+  /fCourier ISO-8859-1Encoding /Courier reencode_font
+  /fCourier-Bold ISO-8859-1Encoding /Courier-Bold reencode_font
+  /fCourier-BoldOblique ISO-8859-1Encoding /Courier-BoldOblique reencode_font
+  /fCourier-Oblique ISO-8859-1Encoding /Courier-Oblique reencode_font
+  /fHelvetica ISO-8859-1Encoding /Helvetica reencode_font
+  /fHelvetica-Bold ISO-8859-1Encoding /Helvetica-Bold reencode_font
+  /fTimes-Bold ISO-8859-1Encoding /Times-Bold reencode_font
+  /fTimes-Roman ISO-8859-1Encoding /Times-Roman reencode_font
+currentdict end def
+/bgcolor [ 0 0 0 ] def
+/bg false def
+/ul false def
+/bx false def
+% The font for line numbering
+/f# /Helvetica findfont bfs .6 mul scalefont def
+/fSymbol /Symbol findfont def
+/hm fnfs 0.25 mul def
+/pw
+   cw 81.400000 mul
+def
+/ph
+   501.959430 th add
+def
+/pmw urx llx sub pw 2 mul sub 1 div def
+/pmh 0 def
+/v 0 def
+/x [
+  0
+  dup pmw add pw add
+] def
+/y [
+  pmh ph add 0 mul ph add
+  dup
+] def
+/scx sw 2 div def
+/scy sh 2 div def
+/snx urx def
+/sny lly 2 add def
+/dx llx def
+/dy sny def
+/fnx scx def
+/fny dy def
+/lx snx def
+/ly ury fnfs 0.8 mul sub def
+/sx 0 def
+/tab 8 def
+/x0 0 def
+/y0 0 def
+%%EndSetup
+
+%%Page: (1-2) 1
+%%BeginPageSetup
+/pagesave save def
+sh 0 translate 90 rotate
+%%EndPageSetup
+iso1dict begin
+gsave
+llx lly 12 add translate
+/v 0 store
+/x0 x v get 3.362408 add sx cw mul add store
+/y0 y v get bfs th add sub store
+x0 y0 moveto
+(#!/bin/env python3.8) c n
+() p n
+(""") N
+(Simon Yoon) str n
+(ECE470 Deep Learning) N
+(Professor Curro) N
+() N
+(Took inspiration from Professor Curro's example submission) N
+() N
+(Husam Almanakly and Michael Bentivegna helped debug; ) N
+(There were issues in methods that I used both tf and np simultaneously in. ) N
+(Changing it so that it was one or the either locally fixed it ) N
+(-believed it to be a datatype handling issue ) N
+() N
+(i.e tf.zeros vs np.zeros, tf.exp vs np.exp ) N
+() N
+(./tf.sh  gs -sDEVICE=pdfwrite -dNOPAUSE -dBATCH -dSAFER -sOutputFile=main.py.pdf hw1/main.py.pdf hw1/) N
+(fit.pdf) N
+(""") p n
+() N
+(import) K
+( os) p n
+(import) K
+( logging) p n
+(import) K
+( matplotlib) p n
+(import) K
+( matplotlib.pyplot as plt) p n
+(import) K
+( numpy as np) p n
+(import) K
+( tensorflow as tf) p n
+() N
+(from) K
+( absl ) p
+(import) K
+( app) p n
+(from) K
+( absl ) p
+(import) K
+( flags) p n
+(from) K
+( tqdm ) p
+(import) K
+( trange) p n
+() N
+(from) K
+( dataclasses ) p
+(import) K
+( dataclass, field, InitVar) p n
+() N
+(script_path = os.path.dirname\(os.path.realpath\(__file__\)\)) N
+() N
+() N
+(@dataclass) N
+(class) K
+( LinearModel:) p n
+(    weights: np.ndarray) N
+(    bias: float) N
+() N
+(    m: np.ndarray  ) S
+(# mu) c n
+(    s: np.ndarray  ) p
+(# sigma) c n
+() p n
+() N
+(@dataclass) N
+(class) K
+( Data:) p n
+(    model: LinearModel) N
+(    rng: InitVar[np.random.Generator]) N
+(    num_features: int) N
+(    num_samples: int) N
+(    sigma: float) N
+(    x: np.ndarray = field\(init=False\)) N
+(    y: np.ndarray = field\(init=False\)) N
+() N
+(    ) S
+(def) K
+( __post_init__\(self, rng\):) p n
+(        self.index = np.arange\(self.num_samples\)) N
+(        self.x = rng.uniform\() N
+(            0.1, 0.9, size=\(self.num_samples, 1\)) N
+(        \)  ) S
+(# self.num_features -> 1) c n
+(        clean_y = np.sin\(2 * np.pi * self.x\)  ) p
+(# + epsilon) c n
+(        e = rng.normal\() p n
+(main.py) (Page 1/4) (Sep 13, 22 18:13) title
+border
+/v 1 store
+/x0 x v get 3.362408 add sx cw mul add store
+/y0 y v get bfs th add sub store
+x0 y0 moveto
+(            loc=0, scale=0.2, size=\(self.num_samples, 1\)) p n
+(        \)  ) S
+(# e_i is drawn from N\(O,sigma_noise\) something close to 0.1) c n
+(        self.y = clean_y + e  ) p
+(# y_i = sin\(2*pi*x_i\)+e) c n
+() p n
+(    ) S
+(def) K
+( get_batch\(self, rng, batch_size\):) p n
+(        """) N
+(        Select random subset of examples for training batch) str n
+(        ) S
+(""") p n
+(        choices = rng.choice\(self.index, size=batch_size\)) N
+() N
+(        ) S
+(return) K
+( self.x[choices], self.y[choices].flatten\(\)) p n
+() N
+() N
+(""") N
+(def compare_linear_models\(a: LinearModel, b: LinearModel\):) str n
+(    for w_a, w_b in zip\(a.weights, b.weights\):) N
+(        print\(f) S
+("{w_a:0.2f}, {w_b:0.2f}") p
+(\)) str n
+() N
+(    print\(f) S
+("{a.bias:0.2f}, {b.bias:0.2f}") p
+(\)) str n
+(""") p n
+() N
+(font = {) N
+(    ) S
+(# "family": "Adobe Caslon Pro",) c n
+(    ") p
+(size) str
+(": 10,) p n
+(}) N
+() N
+(matplotlib.style.use\(") S
+(classic) str
+("\)) p n
+(matplotlib.rc\(") S
+(font) str
+(", **font\)) p n
+() N
+(FLAGS = flags.FLAGS) N
+(flags.DEFINE_integer\(") S
+(num_features) str
+(", 6, ") p
+(Number of bases in record) str
+("\)  ) p
+(# M = 6) c n
+(flags.DEFINE_integer\(") p
+(num_samples) str
+(", 50, ") p
+(Number of samples in dataset) str
+("\)  ) p
+(# N = 50) c n
+(flags.DEFINE_integer\(") p
+(batch_size) str
+(", 16, ") p
+(Number of samples in batch) str
+("\)) p n
+(flags.DEFINE_integer\(") S
+(num_iters) str
+(", 3000, ") p
+(Number of SGD iterations) str
+("\)) p n
+(flags.DEFINE_float\() N
+(    ") S
+(learning_rate) str
+(", 0.05, ") p
+(Learning rate / step size for SGD) str
+(") p n
+(\)  ) S
+(# 0.1 -> 0.05 for oscillation on smaller magnitude iters) c n
+(flags.DEFINE_integer\(") p
+(random_seed) str
+(", 31415, ") p
+(Random seed) str
+("\)) p n
+(flags.DEFINE_float\() N
+(    ") S
+(sigma_noise) str
+(", 0.1, ") p
+(Standard deviation of noise random variable) str
+(") p n
+(\)  ) S
+(# 0.5 -> 0.1) c n
+(flags.DEFINE_bool\(") p
+(debug) str
+(", False, ") p
+(Set logging level to debug) str
+("\)) p n
+() N
+() N
+(class) K
+( Model\(tf.Module\):) p n
+(    ) S
+(def) K
+( __init__\(self, rng, num_features\):) p n
+(        """) N
+(        A plain linear regression model with a bias term) str n
+(        altered to be a regression model to estimate sinusoid) N
+(        with weights \(w\), bias \(b\), mu \(m\), sigma \(s\)) N
+(        ) S
+(""") p n
+(        self.num_features = num_features) N
+(        ) S
+(# trainable params) c n
+(        self.w = tf.Variable\(rng.normal\(shape=[self.num_features]\), name=") p
+(weights) str
+() p n
+("\)) N
+(        self.b = tf.Variable\(tf.zeros\(shape=[1, 1]\), name=") S
+(bias) str
+("\)) p n
+(        self.m = tf.Variable\(rng.normal\(shape=[self.num_features]\), name=") S
+(mean) str
+("\)) p n
+(        ) S
+(# mu) c n
+(        self.s = tf.Variable\() p n
+(            rng.normal\(shape=[self.num_features]\), name=") S
+(sigma) str
+(") p n
+(        \)  ) S
+(# stdev) c n
+() p n
+(main.py) (Page 2/4) (Sep 13, 22 18:13) title
+border
+grestore
+(Printed by Unknown User) rhead
+(./hw1/main.py) (1/2) (Thursday September 15, 2022) footer
+end % of iso1dict
+pagesave restore
+showpage
+%%Page: (3-4) 2
+%%BeginPageSetup
+/pagesave save def
+sh 0 translate 90 rotate
+%%EndPageSetup
+iso1dict begin
+gsave
+llx lly 12 add translate
+/v 0 store
+/x0 x v get 3.362408 add sx cw mul add store
+/y0 y v get bfs th add sub store
+x0 y0 moveto
+(    ) p
+(def) K
+( __call__\(self, x\):) p n
+(        """) N
+(        Functional form with expanded phi) str n
+(        Gaussian basis functions) N
+(        ) S
+(""") p n
+(        gau = tf.zeros\(shape=\(x.shape[0], 1\)\)) N
+(        """) N
+(        for i in range\(self.num_features\):) str n
+(            gau += tf.math.exp\(-1 * \(\(\(x - self.m[i]\) ** 2\) / \(self.s[i] ** 2\)\)\)) N
+(        gau += self.b) N
+(        ) S
+(""") p n
+(        gau = self.w * tf.math.exp\(-1 * \(\(\(x - self.m\) ** 2\) / \(self.s**2\)\)\)) N
+(        ) S
+(return) K
+( tf.squeeze\(tf.reduce_sum\(gau, 1\) + self.b\)  ) p
+(# incl mu, sig est) c n
+() p n
+(    @property) N
+(    ) S
+(def) K
+( model\(self\):) p n
+(        ) S
+(return) K
+( LinearModel\() p n
+(            self.m.numpy\(\).reshape\([self.num_features]\),) N
+(            self.s.numpy\(\).reshape\([self.num_features]\),) N
+(            self.w.numpy\(\).reshape\([self.num_features]\),) N
+(            self.b.numpy\(\).squeeze\(\),) N
+(        \)) N
+() N
+() N
+(def) K
+( main\(a\):) p n
+(    logging.basicConfig\(\)) N
+() N
+(    ) S
+(if) K
+( FLAGS.debug:) p n
+(        logging.getLogger\(\).setLevel\(logging.DEBUG\)) N
+() N
+(    ) S
+(# Safe np and tf PRNG) c n
+(    seed_sequence = np.random.SeedSequence\(FLAGS.random_seed\)) p n
+(    np_seed, tf_seed = seed_sequence.spawn\(2\)) N
+(    np_rng = np.random.default_rng\(np_seed\)) N
+(    tf_rng = tf.random.Generator.from_seed\(tf_seed.entropy\)) N
+() N
+(    data_generating_model = LinearModel\() N
+(        weights=np_rng.integers\(low=0, high=5, size=\(FLAGS.num_features\)\),) N
+(        bias=2,) N
+(        m=np_rng.integers\(low=0, high=1, size=\(FLAGS.num_features\)\),) N
+(        s=np_rng.integers\(low=0, high=1, size=\(FLAGS.num_features\)\),) N
+(    \)) N
+(    logging.debug\(data_generating_model\)) N
+() N
+(    data = Data\() N
+(        data_generating_model,) N
+(        np_rng,) N
+(        FLAGS.num_features,) N
+(        FLAGS.num_samples,) N
+(        FLAGS.sigma_noise,) N
+(    \)) N
+() N
+(    model = Model\(tf_rng, FLAGS.num_features\)) N
+(    logging.debug\(model.model\)) N
+() N
+(    optimizer = tf.optimizers.SGD\(learning_rate=FLAGS.learning_rate\)) N
+() N
+(    bar = trange\(FLAGS.num_iters\)) N
+(    ) S
+(for) K
+( i ) p
+(in) K
+( bar:) p n
+(        with tf.GradientTape\(\) as tape:) N
+(            x, y = data.get_batch\(np_rng, FLAGS.batch_size\)) N
+(            y_hat = model\(x\)) N
+(main.py) (Page 3/4) (Sep 13, 22 18:13) title
+border
+/v 1 store
+/x0 x v get 3.362408 add sx cw mul add store
+/y0 y v get bfs th add sub store
+x0 y0 moveto
+(            loss = 0.5 * tf.reduce_mean\() p n
+(                \(y_hat - y\) ** 2) N
+(            \)  ) S
+(# implement loss function to minimize) c n
+() p n
+(        grads = tape.gradient\(loss, model.trainable_variables\)) N
+(        optimizer.apply_gradients\(zip\(grads, model.trainable_variables\)\)) N
+() N
+(        bar.set_description\(f") S
+(Loss @ {i} => {loss.numpy\(\):0.6f}) str
+("\)) p n
+(        bar.refresh\(\)) N
+() N
+(    logging.debug\(model.model\)) N
+() N
+(    ) S
+(# print out true values versus estimates) c n
+(    ) p
+(print) K
+(\(") p
+(w,    w_hat) str
+("\)) p n
+(    """) N
+(    compare_linear_models\(data.model, model.model\)) str n
+(    ) S
+(""") p n
+() N
+(    logging.info\(f") S
+(Mu: {model.m}) str
+("\)) p n
+() N
+(    fig, ax = plt.subplots\(1, 2, figsize=\(10, 3\), dpi=200\)) N
+(    ax[0].set_title\(") S
+(Linear Regression on Sinewave) str
+("\)) p n
+(    ax[0].set_xlabel\(") S
+(x) str
+("\)) p n
+(    h = ax[0].set_ylabel\(") S
+(y) str
+(", labelpad=10\)) p n
+(    h.set_rotation\(0\)) N
+() N
+(    ) S
+(# plot with noise) c n
+(    xs = np.linspace\(-1.0, 2, 1000\)) p n
+(    xs = xs[:, np.newaxis]) N
+(    yhat = model\(xs\)) N
+(    ax[0].plot\(xs, np.squeeze\(yhat\), ") S
+(--) str
+(", color=") p
+(green) str
+("\)) p n
+(    ax[0].plot\(np.squeeze\(data.x\), data.y, ") S
+(o) str
+(", color=") p
+(blue) str
+("\)) p n
+(    ax[0].set_ylim\(np.amin\(data.y\) * 1.5, np.amax\(data.y\) * 1.5\)) N
+(    ax[0].set_xlim\(0.1, 0.9\)) N
+() N
+(    ) S
+(# plot sine) c n
+(    true_y = np.sin\(2 * np.pi * xs\)) p n
+(    ax[0].plot\(xs, true_y, color=") S
+(red) str
+("\)) p n
+(    ax[0].legend\([") S
+(Regression Estimate) str
+(", ") p
+(Data) str
+(", ") p
+(True Sine) str
+("], fontsize=9\)) p n
+() N
+(    ) S
+(# plot bases) c n
+(    ax[1].set_title\(") p
+(Basis Functions) str
+("\)) p n
+(    ax[1].set_xlabel\(") S
+(x) str
+("\)) p n
+(    h = ax[1].set_ylabel\(") S
+(y) str
+(", labelpad=10\)) p n
+(    h.set_rotation\(0\)) N
+() N
+(    ) S
+(# plot gaussians) c n
+(    gaussians = np.zeros\(\(1000, model.num_features\)\)) p n
+(    ) S
+(for) K
+( j ) p
+(in) K
+( range\(model.num_features\):) p n
+(        gaussians[:, j] = tf.math.exp\() N
+(            -1 * \(\(xs.T - model.m[j]\) ** 2\) / \(model.s[j] ** 2\)) N
+(        \)) N
+(    ax[1].plot\(xs, gaussians\)) N
+() N
+(    plt.tight_layout\(\)) N
+(    plt.savefig\(f") S
+({script_path}/fit.pdf) str
+("\)) p n
+() N
+() N
+(if) K
+( __name__ == ") p
+(__main__) str
+(":) p n
+(    app.run\(main\)) N
+(main.py) (Page 4/4) (Sep 13, 22 18:13) title
+border
+grestore
+(Printed by Unknown User) rhead
+(./hw1/main.py) (2/2) (Thursday September 15, 2022) footer
+end % of iso1dict
+pagesave restore
+showpage
+
+%%Trailer
+end
+%%EOF
