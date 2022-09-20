@@ -1,8 +1,8 @@
 %!PS-Adobe-3.0
-%%Title: main.py
+%%Title: hw2.py
 %%For: Unknown User
 %%Creator: a2ps version 4.14
-%%CreationDate: Tue Sep 20 20:15:21 2022
+%%CreationDate: Tue Sep 20 20:13:33 2022
 %%BoundingBox: 24 24 571 818
 %%DocumentData: Clean7Bit
 %%Orientation: Landscape
@@ -758,20 +758,35 @@ llx lly 12 add translate
 /y0 y v get bfs th add sub store
 x0 y0 moveto
 (#!/bin/env python3.8) c n
-() p n
-(""") N
-(Example assignment. Author: Chris Curro) str n
 (""") p n
+(Simon Yoon) str n
+(ECE471 Deep Learning) N
+(Professor Curro) N
+() N
+(I had originally informed by activation function, learning rate, regularization choices by using ) N
+(different configurations on the TensorFlow NN playground by Carnegie Mellon students, but it did ) N
+(not work as intended. I had my first few runs with the layers set up as [\(2,100\),\(100,100\),\(100,1\)]) N
+(with ELU. tf.nn.sigmoid_cross_entropy_with_logits did not work as intended. It improved when ) N
+(changed to RELU and when more neurons were added to the hidden layers 100-->200. Sigmoid as final ) N
+(activation function to keep output between [0,1]. My model was stuck at NaN for loss for nonzero) N
+(lambda. Running when lambda = 0, fixed the NaN loss, but changing the lambda and learning rate to ) N
+(much smaller numbers helped it run with nonzero lambda. Loss was blowing up with more variables and) N
+(had to divide by len\(model.trainable_variables\) to suppress loss. ) N
+() N
+(""") p n
+() N
 (import) K
 ( os) p n
 (import) K
 ( logging) p n
 (import) K
-( matplotlib) p n
-(import) K
 ( matplotlib.pyplot as plt) p n
 (import) K
 ( numpy as np) p n
+(from) K
+( numpy ) p
+(import) K
+( pi) p n
 (import) K
 ( tensorflow as tf) p n
 () N
@@ -795,33 +810,121 @@ x0 y0 moveto
 () N
 (script_path = os.path.dirname\(os.path.realpath\(__file__\)\)) N
 () N
+(FLAGS = flags.FLAGS) N
+(flags.DEFINE_integer\(") S
+(num_features) str
+(", 2, ") p
+(Number of features in record) str
+("\)  ) p
+(# spiral count) c n
+(flags.DEFINE_integer\(") p
+(num_samples) str
+(", 1000, ") p
+(Number of samples in dataset) str
+("\)) p n
+(flags.DEFINE_integer\(") S
+(batch_size) str
+(", 32, ") p
+(Number of samples in batch) str
+("\)) p n
+(flags.DEFINE_integer\(") S
+(num_iters) str
+(", 1000, ") p
+(Number of iterations) str
+("\)) p n
+(flags.DEFINE_float\(") S
+(learning_rate) str
+(", 0.003, ") p
+(Learning rate) str
+("\)) p n
+(flags.DEFINE_integer\(") S
+(random_seed) str
+(", 31415, ") p
+(Random seed) str
+("\)) p n
+(flags.DEFINE_float\(") S
+(sigma_noise) str
+(", 0.1, ") p
+(Standard deviation of noise random variable) str
+("\)) p n
+(flags.DEFINE_float\(") S
+(LAMBDA) str
+(", 0.001, ") p
+(Lambda) str
+("\)) p n
+(flags.DEFINE_list\(") S
+(layers) str
+(", [\(2, 200\), \(200, 100\), \(100, 1\)], ") p
+(Layers) str
+("\)) p n
+(flags.DEFINE_bool\(") S
+(debug) str
+(", False, ") p
+(Set logging level to debug) str
+("\)) p n
+() N
+(THETA_MAX = 4 * pi) N
+() N
 () N
 (@dataclass) N
 (class) K
-( LinearModel:) p n
-(    weights: np.ndarray) N
-(    bias: float) N
+( SpiralModel:) p n
+(    x: np.ndarray) N
+(    y: np.ndarray) N
+(    theta: np.ndarray) N
+(    true: np.ndarray) N
 () N
 () N
 (@dataclass) N
 (class) K
 ( Data:) p n
-(    model: LinearModel) N
+(    model: SpiralModel) N
 (    rng: InitVar[np.random.Generator]) N
 (    num_features: int) N
 (    num_samples: int) N
-(    sigma: float) N
+(hw2.py) (Page 1/4) (Sep 15, 22 0:06) title
+border
+/v 1 store
+/x0 x v get 3.362408 add sx cw mul add store
+/y0 y v get bfs th add sub store
+x0 y0 moveto
+(    sigma: float) p n
+() N
 (    x: np.ndarray = field\(init=False\)) N
 (    y: np.ndarray = field\(init=False\)) N
-() N
+(    theta: np.ndarray = field\(init=False\)) N
+(    ) S
+(# true: np.ndarray = field\(init=False\)) c n
+() p n
 (    ) S
 (def) K
 ( __post_init__\(self, rng\):) p n
-(        self.index = np.arange\(self.num_samples\)) N
-(        self.x = rng.uniform\(0.1, 0.9, size=\(self.num_samples, self.num_features) N
-(\)\)) N
-(        clean_y = self.x @ self.model.weights[:, np.newaxis] + self.model.bias) N
-(        self.y = rng.normal\(loc=clean_y, scale=self.sigma\)) N
+(        self.index = np.arange\(self.num_samples * self.num_features\)) N
+(        self.theta = rng.uniform\(0, THETA_MAX, size=\(self.num_samples, 1\)\)) N
+(        self.x = np.zeros\(\(self.num_samples * self.num_features, 2\), dtype=") S
+(float3) str n
+(2) S
+("\)) p n
+(        self.y = np.zeros\(self.num_samples * self.num_features, dtype=") S
+(float32) str
+("\)) p n
+(        ) S
+(# spirals) c n
+(        ) p
+(# formatting for clean output) c n
+(        ) p
+(for) K
+( c ) p
+(in) K
+( range\(self.num_features\):) p n
+(            i = range\(self.num_samples * c, self.num_samples * \(c + 1\)\)) N
+(            r = np.linspace\(1, 15, self.num_samples\)) N
+(            self.theta = \() N
+(                np.linspace\(c * 3, \(c + 4\) * 3, self.num_samples\)) N
+(                + np.random.randn\(self.num_samples\) * self.sigma) N
+(            \)) N
+(            self.x[i] = np.c_[r * np.sin\(self.theta\), r * np.cos\(self.theta\)]) N
+(            self.y[i] = c) N
 () N
 (    ) S
 (def) K
@@ -834,112 +937,107 @@ x0 y0 moveto
 () N
 (        ) S
 (return) K
-( self.x[choices], self.y[choices].flatten\(\)) p n
+( self.x[choices], self.y[choices]) p n
 () N
 () N
+(# https://tensorflow.org/guide/core/mlp_core#multilayer_perceptron_mlp_overview) c n
 (def) K
-( compare_linear_models\(a: LinearModel, b: LinearModel\):) p n
+( xavier_init\(shape\):) p n
 (    ) S
-(for) K
-( w_a, w_b ) p
-(in) K
-( zip\(a.weights, b.weights\):) p n
-(        ) S
-(print) K
-(\(f") p
-({w_a:0.2f}, {w_b:0.2f}) str
-("\)) p n
-() N
+(# Computes the xavier initialization values for a weight matrix) c n
+(    in_dim, out_dim = shape) p n
+(    xavier_lim = tf.sqrt\(6.0\) / tf.sqrt\(tf.cast\(in_dim + out_dim, tf.float32\)\)) N
+(    weight_vals = tf.random.uniform\() N
+(        shape=\(in_dim, out_dim\), minval=-xavier_lim, maxval=xavier_lim, seed=22) N
+(    \)) N
 (    ) S
-(print) K
-(\(f") p
-({a.bias:0.2f}, {b.bias:0.2f}) str
-("\)) p n
+(return) K
+( weight_vals) p n
 () N
 () N
-(font = {) N
-(    ) S
-(# "family": "Adobe Caslon Pro",) c n
-(main.py) (Page 1/3) (Aug 31, 22 23:20) title
-border
-/v 1 store
-/x0 x v get 3.362408 add sx cw mul add store
-/y0 y v get bfs th add sub store
-x0 y0 moveto
-(    ") p
-(size) str
-(": 10,) p n
-(}) N
-() N
-(matplotlib.style.use\(") S
-(classic) str
-("\)) p n
-(matplotlib.rc\(") S
-(font) str
-(", **font\)) p n
-() N
-(FLAGS = flags.FLAGS) N
-(flags.DEFINE_integer\(") S
-(num_features) str
-(", 1, ") p
-(Number of features in record) str
-("\)) p n
-(flags.DEFINE_integer\(") S
-(num_samples) str
-(", 50, ") p
-(Number of samples in dataset) str
-("\)) p n
-(flags.DEFINE_integer\(") S
-(batch_size) str
-(", 16, ") p
-(Number of samples in batch) str
-("\)) p n
-(flags.DEFINE_integer\(") S
-(num_iters) str
-(", 300, ") p
-(Number of SGD iterations) str
-("\)) p n
-(flags.DEFINE_float\(") S
-(learning_rate) str
-(", 0.1, ") p
-(Learning rate / step size for SGD) str
-("\)) p n
-(flags.DEFINE_integer\(") S
-(random_seed) str
-(", 31415, ") p
-(Random seed) str
-("\)) p n
-(flags.DEFINE_float\(") S
-(sigma_noise) str
-(", 0.5, ") p
-(Standard deviation of noise random variable) str
-("\)) p n
-(flags.DEFINE_bool\(") S
-(debug) str
-(", False, ") p
-(Set logging level to debug) str
-("\)) p n
-() N
-() N
+(# https://www.tensorflow.org/api_docs/python/tf/Module) c n
 (class) K
-( Model\(tf.Module\):) p n
+( DenseLayer\(tf.Module\):) p n
 (    ) S
 (def) K
-( __init__\(self, rng, num_features\):) p n
-(        """) N
-(        A plain linear regression model with a bias term) str n
+( __init__\(self, out_dim, weight_init=xavier_init, activation=tf.identity\)) p n
+(:) N
 (        ) S
-(""") p n
-(        self.num_features = num_features) N
-(        self.w = tf.Variable\(rng.normal\(shape=[self.num_features, 1]\)\)) N
-(        self.b = tf.Variable\(tf.zeros\(shape=[1, 1]\)\)) N
+(# Initialize the dimensions and activation functions) c n
+(        self.out_dim = out_dim) p n
+(        self.weight_init = weight_init) N
+(        self.activation = activation) N
+(        self.built = False) N
 () N
 (    ) S
 (def) K
 ( __call__\(self, x\):) p n
 (        ) S
+(if) K
+( ) p
+(not) K
+( self.built:) p n
+(            ) S
+(# Infer the input dimension based on first call) c n
+(            self.in_dim = x.shape[1]) p n
+(            ) S
+(# Initialize the weights and biases using Xavier scheme) c n
+(            self.w = tf.Variable\(xavier_init\(shape=\(self.in_dim, self.out_dim\)\)\)) p n
+(            self.b = tf.Variable\(tf.zeros\(shape=\(self.out_dim,\)\)\)) N
+(hw2.py) (Page 2/4) (Sep 15, 22 0:06) title
+border
+grestore
+(Printed by Unknown User) rhead
+(./spiral-classification/hw2.py) (1/2) (Tuesday September 20, 2022) footer
+end % of iso1dict
+pagesave restore
+showpage
+%%Page: (3-4) 2
+%%BeginPageSetup
+/pagesave save def
+sh 0 translate 90 rotate
+%%EndPageSetup
+iso1dict begin
+gsave
+llx lly 12 add translate
+/v 0 store
+/x0 x v get 3.362408 add sx cw mul add store
+/y0 y v get bfs th add sub store
+x0 y0 moveto
+(            self.built = True) p n
+(        ) S
+(# Compute the forward pass) c n
+(        ) p
+(# z = tf.add\(tf.matmul\(x, self.w\), self.b\)) c n
+(        z = x @ self.w + self.b) p n
+(        ) S
 (return) K
-( tf.squeeze\(x @ self.w + self.b\)) p n
+( self.activation\(z\)) p n
+() N
+() N
+(# https://www.tensorflow.org/api_docs/python/tf/Module) c n
+(class) K
+( MLP\(tf.Module\):) p n
+(    ) S
+(def) K
+( __init__\(self, layers\):) p n
+(        self.layers = layers) N
+() N
+(    @tf.function) N
+(    ) S
+(def) K
+( __call__\(self, x, rng\):) p n
+(        ) S
+(# Execute the model's layers sequentially) c n
+(        ) p
+(for) K
+( layer ) p
+(in) K
+( self.layers:) p n
+(            x = layer\(x\)) N
+(        ) S
+(return) K
+( tf.squeeze\(x\)) p n
 () N
 (    @property) N
 (    ) S
@@ -947,12 +1045,10 @@ x0 y0 moveto
 ( model\(self\):) p n
 (        ) S
 (return) K
-( LinearModel\() p n
-(            self.w.numpy\(\).reshape\([self.num_features]\), self.b.numpy\(\).squeeze\() N
-(\)) N
-(        \)) N
+( self.layers) p n
 () N
 () N
+(# https://www.tensorflow.org/guide/keras/custom_layers_and_models) c n
 (def) K
 ( main\(a\):) p n
 (    logging.basicConfig\(\)) N
@@ -969,11 +1065,13 @@ x0 y0 moveto
 (    np_rng = np.random.default_rng\(np_seed\)) N
 (    tf_rng = tf.random.Generator.from_seed\(tf_seed.entropy\)) N
 () N
-(    data_generating_model = LinearModel\() N
-(        weights=np_rng.integers\(low=0, high=5, size=\(FLAGS.num_features\)\), bias=) N
-(2) N
+(    data_generating_model = SpiralModel\() N
+(        theta=np_rng.integers\(low=0, high=THETA_MAX, size=\(FLAGS.num_samples, 1\)) N
+(\),) N
+(        x=np_rng.integers\(low=0, high=10, size=\(FLAGS.num_samples, 1\)\),) N
+(        y=np_rng.integers\(low=0, high=10, size=\(FLAGS.num_samples, 1\)\),) N
+(        true=np_rng.integers\(low=0, high=1, size=\(FLAGS.num_samples, 1\)\),) N
 (    \)) N
-(    logging.debug\(data_generating_model\)) N
 () N
 (    data = Data\() N
 (        data_generating_model,) N
@@ -982,31 +1080,33 @@ x0 y0 moveto
 (        FLAGS.num_samples,) N
 (        FLAGS.sigma_noise,) N
 (    \)) N
-(main.py) (Page 2/3) (Aug 31, 22 23:20) title
+() N
+(    model = MLP\() N
+(        [) N
+(            DenseLayer\(200, activation=tf.nn.relu\),) N
+(            DenseLayer\(100, activation=tf.nn.relu\),) N
+(            DenseLayer\(1, activation=tf.math.sigmoid\),) N
+(        ]) N
+(    \)) N
+() N
+(    ) S
+(# https://ai.stackexchange.com/questions/18206/what-kind-of-optimizer-is-sug) c n
+(hw2.py) (Page 3/4) (Sep 15, 22 0:06) title
 border
-grestore
-(Printed by Unknown User) rhead
-(./linear-example/main.py) (1/2) (Tuesday September 20, 2022) footer
-end % of iso1dict
-pagesave restore
-showpage
-%%Page: (3) 2
-%%BeginPageSetup
-/pagesave save def
-sh 0 translate 90 rotate
-%%EndPageSetup
-iso1dict begin
-gsave
-llx lly 12 add translate
-/v 0 store
+/v 1 store
 /x0 x v get 3.362408 add sx cw mul add store
 /y0 y v get bfs th add sub store
 x0 y0 moveto
-() p n
-(    model = Model\(tf_rng, FLAGS.num_features\)) N
-(    logging.debug\(model.model\)) N
+(gested-to-use-for-binary-classification-of-similar) c n
+(    optimizer = tf.keras.optimizers.Adam\(learning_rate=FLAGS.learning_rate\)) p n
 () N
-(    optimizer = tf.optimizers.SGD\(learning_rate=FLAGS.learning_rate\)) N
+(    ) S
+(def) K
+( cross_entropy\(y, y_hat\):) p n
+(        loss = -y * tf.math.log\(y_hat\) - \(1 - y\) * tf.math.log\(1 - y_hat\)) N
+(        ) S
+(return) K
+( tf.reduce_mean\(loss\)) p n
 () N
 (    bar = trange\(FLAGS.num_iters\)) N
 (    ) S
@@ -1016,60 +1116,74 @@ x0 y0 moveto
 ( bar:) p n
 (        with tf.GradientTape\(\) as tape:) N
 (            x, y = data.get_batch\(np_rng, FLAGS.batch_size\)) N
-(            y_hat = model\(x\)) N
-(            loss = 0.5 * tf.reduce_mean\(\(y_hat - y\) ** 2\)) N
+(            y_hat = model\(x, tf_rng\)) N
+(            ) S
+(# loss = tf.reduce_mean\() c n
+(            ) p
+(#     tf.nn.sigmoid_cross_entropy_with_logits\(logits=y_hat, labels=y) c n
+(\)) N
+(            ) p
+(# \)) c n
+(            loss = cross_entropy\(y, y_hat\)) p n
+(            l2_reg = 0) N
+(            ) S
+(for) K
+( var ) p
+(in) K
+( model.trainable_variables:) p n
+(                l2_reg += tf.nn.l2_loss\(var\)) N
+(            loss = tf.reduce_mean\() N
+(                loss + FLAGS.LAMBDA * l2_reg / len\(model.trainable_variables\)) N
+(            \)) N
 () N
 (        grads = tape.gradient\(loss, model.trainable_variables\)) N
 (        optimizer.apply_gradients\(zip\(grads, model.trainable_variables\)\)) N
-() N
 (        bar.set_description\(f") S
 (Loss @ {i} => {loss.numpy\(\):0.6f}) str
 ("\)) p n
 (        bar.refresh\(\)) N
 () N
-(    logging.debug\(model.model\)) N
-() N
 (    ) S
-(# print out true values versus estimates) c n
-(    ) p
-(print) K
-(\(") p
-(w,    w_hat) str
+(# logging.debug\(model.model\)) c n
+() p n
+(    n = 100) N
+(    x = np.linspace\(-15, 15, n, dtype=") S
+(float32) str
 ("\)) p n
-(    compare_linear_models\(data.model, model.model\)) N
+(    xx, yy = np.meshgrid\(x, x\)) N
 () N
 (    ) S
-(if) K
-( FLAGS.num_features > 1:) p n
+(# reshape to fit mat dim of Model) c n
+(    decision = np.zeros\(\(n, n\)\)) p n
+(    ) S
+(for) K
+( i ) p
+(in) K
+( range\(n\):) p n
 (        ) S
-(# Only continue to plotting if x is a scalar) c n
-(        exit\(0\)) p n
+(for) K
+( j ) p
+(in) K
+( range\(n\):) p n
+(            xy = np.reshape\([x[j], x[i]], \(1, 2\)\)) N
+(            p = model\(xy, tf_rng\)) N
+(            ) S
+(if) K
+( p >= 0.5:) p n
+(                decision[i, j] = 1) N
+(    cm = plt.cm.RdBu) N
 () N
-(    fig, ax = plt.subplots\(1, 1, figsize=\(5, 3\), dpi=200\)) N
-() N
-(    ax.set_title\(") S
-(Linear fit) str
-("\)) p n
-(    ax.set_xlabel\(") S
-(x) str
-("\)) p n
-(    ax.set_ylim\(0, np.amax\(data.y\) * 1.5\)) N
-(    h = ax.set_ylabel\(") S
-(y) str
-(", labelpad=10\)) p n
-(    h.set_rotation\(0\)) N
-() N
-(    xs = np.linspace\(0, 1, 10\)) N
-(    xs = xs[:, np.newaxis]) N
-(    ax.plot\(xs, np.squeeze\(model\(xs\)\), ") S
-(-) str
-(", np.squeeze\(data.x\), data.y, ") p
-(o) str
-("\)) p n
-() N
+(    plt.contourf\(xx, yy, decision, cmap=cm, alpha=0.5\)) N
+(    plt.scatter\() N
+(        data.x[:, 0], data.x[:, 1], c=data.y, cmap=cm, alpha=1, edgecolors=") S
+(black) str
+() p n
+(") N
+(    \)) N
+(    plt.show\(\)) N
 (    plt.tight_layout\(\)) N
 (    plt.savefig\(f") S
-({script_path}/fit.pdf) str
+({script_path}/spiral.pdf) str
 ("\)) p n
 () N
 () N
@@ -1078,11 +1192,11 @@ x0 y0 moveto
 (__main__) str
 (":) p n
 (    app.run\(main\)) N
-(main.py) (Page 3/3) (Aug 31, 22 23:20) title
+(hw2.py) (Page 4/4) (Sep 15, 22 0:06) title
 border
 grestore
 (Printed by Unknown User) rhead
-(./linear-example/main.py) (2/2) (Tuesday September 20, 2022) footer
+(./spiral-classification/hw2.py) (2/2) (Tuesday September 20, 2022) footer
 end % of iso1dict
 pagesave restore
 showpage

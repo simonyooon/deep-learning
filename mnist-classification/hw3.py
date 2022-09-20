@@ -1,3 +1,10 @@
+"""
+Simon Yoon
+ECE472 Deep Learning
+Professor Curro
+MNIST Classification
+"""
+
 import os
 import numpy as np
 from matplotlib import pyplot as plt

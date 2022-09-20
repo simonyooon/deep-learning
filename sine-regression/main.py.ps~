@@ -2,7 +2,7 @@
 %%Title: main.py
 %%For: Unknown User
 %%Creator: a2ps version 4.14
-%%CreationDate: Tue Sep 20 20:15:21 2022
+%%CreationDate: Tue Sep 20 20:13:33 2022
 %%BoundingBox: 24 24 571 818
 %%DocumentData: Clean7Bit
 %%Orientation: Landscape
@@ -760,8 +760,23 @@ x0 y0 moveto
 (#!/bin/env python3.8) c n
 () p n
 (""") N
-(Example assignment. Author: Chris Curro) str n
+(Simon Yoon) str n
+(ECE470 Deep Learning) N
+(Professor Curro) N
+() N
+(Took inspiration from Professor Curro's example submission) N
+() N
+(Husam Almanakly and Michael Bentivegna helped debug; ) N
+(There were issues in methods that I used both tf and np simultaneously in. ) N
+(Changing it so that it was one or the either locally fixed it ) N
+(-believed it to be a datatype handling issue ) N
+() N
+(i.e tf.zeros vs np.zeros, tf.exp vs np.exp ) N
+() N
+(./tf.sh  gs -sDEVICE=pdfwrite -dNOPAUSE -dBATCH -dSAFER -sOutputFile=main.py.pdf hw1/main.py.pdf hw1/) N
+(fit.pdf) N
 (""") p n
+() N
 (import) K
 ( os) p n
 (import) K
@@ -802,6 +817,11 @@ x0 y0 moveto
 (    weights: np.ndarray) N
 (    bias: float) N
 () N
+(    m: np.ndarray  ) S
+(# mu) c n
+(    s: np.ndarray  ) p
+(# sigma) c n
+() p n
 () N
 (@dataclass) N
 (class) K
@@ -818,11 +838,25 @@ x0 y0 moveto
 (def) K
 ( __post_init__\(self, rng\):) p n
 (        self.index = np.arange\(self.num_samples\)) N
-(        self.x = rng.uniform\(0.1, 0.9, size=\(self.num_samples, self.num_features) N
-(\)\)) N
-(        clean_y = self.x @ self.model.weights[:, np.newaxis] + self.model.bias) N
-(        self.y = rng.normal\(loc=clean_y, scale=self.sigma\)) N
-() N
+(        self.x = rng.uniform\() N
+(            0.1, 0.9, size=\(self.num_samples, 1\)) N
+(        \)  ) S
+(# self.num_features -> 1) c n
+(        clean_y = np.sin\(2 * np.pi * self.x\)  ) p
+(# + epsilon) c n
+(        e = rng.normal\() p n
+(main.py) (Page 1/4) (Sep 13, 22 18:13) title
+border
+/v 1 store
+/x0 x v get 3.362408 add sx cw mul add store
+/y0 y v get bfs th add sub store
+x0 y0 moveto
+(            loc=0, scale=0.2, size=\(self.num_samples, 1\)) p n
+(        \)  ) S
+(# e_i is drawn from N\(O,sigma_noise\) something close to 0.1) c n
+(        self.y = clean_y + e  ) p
+(# y_i = sin\(2*pi*x_i\)+e) c n
+() p n
 (    ) S
 (def) K
 ( get_batch\(self, rng, batch_size\):) p n
@@ -837,35 +871,21 @@ x0 y0 moveto
 ( self.x[choices], self.y[choices].flatten\(\)) p n
 () N
 () N
-(def) K
-( compare_linear_models\(a: LinearModel, b: LinearModel\):) p n
-(    ) S
-(for) K
-( w_a, w_b ) p
-(in) K
-( zip\(a.weights, b.weights\):) p n
-(        ) S
-(print) K
-(\(f") p
-({w_a:0.2f}, {w_b:0.2f}) str
-("\)) p n
+(""") N
+(def compare_linear_models\(a: LinearModel, b: LinearModel\):) str n
+(    for w_a, w_b in zip\(a.weights, b.weights\):) N
+(        print\(f) S
+("{w_a:0.2f}, {w_b:0.2f}") p
+(\)) str n
 () N
-(    ) S
-(print) K
-(\(f") p
-({a.bias:0.2f}, {b.bias:0.2f}) str
-("\)) p n
-() N
+(    print\(f) S
+("{a.bias:0.2f}, {b.bias:0.2f}") p
+(\)) str n
+(""") p n
 () N
 (font = {) N
 (    ) S
 (# "family": "Adobe Caslon Pro",) c n
-(main.py) (Page 1/3) (Aug 31, 22 23:20) title
-border
-/v 1 store
-/x0 x v get 3.362408 add sx cw mul add store
-/y0 y v get bfs th add sub store
-x0 y0 moveto
 (    ") p
 (size) str
 (": 10,) p n
@@ -881,40 +901,48 @@ x0 y0 moveto
 (FLAGS = flags.FLAGS) N
 (flags.DEFINE_integer\(") S
 (num_features) str
-(", 1, ") p
-(Number of features in record) str
-("\)) p n
-(flags.DEFINE_integer\(") S
+(", 6, ") p
+(Number of bases in record) str
+("\)  ) p
+(# M = 6) c n
+(flags.DEFINE_integer\(") p
 (num_samples) str
 (", 50, ") p
 (Number of samples in dataset) str
-("\)) p n
-(flags.DEFINE_integer\(") S
+("\)  ) p
+(# N = 50) c n
+(flags.DEFINE_integer\(") p
 (batch_size) str
 (", 16, ") p
 (Number of samples in batch) str
 ("\)) p n
 (flags.DEFINE_integer\(") S
 (num_iters) str
-(", 300, ") p
+(", 3000, ") p
 (Number of SGD iterations) str
 ("\)) p n
-(flags.DEFINE_float\(") S
+(flags.DEFINE_float\() N
+(    ") S
 (learning_rate) str
-(", 0.1, ") p
+(", 0.05, ") p
 (Learning rate / step size for SGD) str
-("\)) p n
-(flags.DEFINE_integer\(") S
+(") p n
+(\)  ) S
+(# 0.1 -> 0.05 for oscillation on smaller magnitude iters) c n
+(flags.DEFINE_integer\(") p
 (random_seed) str
 (", 31415, ") p
 (Random seed) str
 ("\)) p n
-(flags.DEFINE_float\(") S
+(flags.DEFINE_float\() N
+(    ") S
 (sigma_noise) str
-(", 0.5, ") p
+(", 0.1, ") p
 (Standard deviation of noise random variable) str
-("\)) p n
-(flags.DEFINE_bool\(") S
+(") p n
+(\)  ) S
+(# 0.5 -> 0.1) c n
+(flags.DEFINE_bool\(") p
 (debug) str
 (", False, ") p
 (Set logging level to debug) str
@@ -928,19 +956,73 @@ x0 y0 moveto
 ( __init__\(self, rng, num_features\):) p n
 (        """) N
 (        A plain linear regression model with a bias term) str n
+(        altered to be a regression model to estimate sinusoid) N
+(        with weights \(w\), bias \(b\), mu \(m\), sigma \(s\)) N
 (        ) S
 (""") p n
 (        self.num_features = num_features) N
-(        self.w = tf.Variable\(rng.normal\(shape=[self.num_features, 1]\)\)) N
-(        self.b = tf.Variable\(tf.zeros\(shape=[1, 1]\)\)) N
-() N
-(    ) S
+(        ) S
+(# trainable params) c n
+(        self.w = tf.Variable\(rng.normal\(shape=[self.num_features]\), name=") p
+(weights) str
+() p n
+("\)) N
+(        self.b = tf.Variable\(tf.zeros\(shape=[1, 1]\), name=") S
+(bias) str
+("\)) p n
+(        self.m = tf.Variable\(rng.normal\(shape=[self.num_features]\), name=") S
+(mean) str
+("\)) p n
+(        ) S
+(# mu) c n
+(        self.s = tf.Variable\() p n
+(            rng.normal\(shape=[self.num_features]\), name=") S
+(sigma) str
+(") p n
+(        \)  ) S
+(# stdev) c n
+() p n
+(main.py) (Page 2/4) (Sep 13, 22 18:13) title
+border
+grestore
+(Printed by Unknown User) rhead
+(./sine-regression/main.py) (1/2) (Tuesday September 20, 2022) footer
+end % of iso1dict
+pagesave restore
+showpage
+%%Page: (3-4) 2
+%%BeginPageSetup
+/pagesave save def
+sh 0 translate 90 rotate
+%%EndPageSetup
+iso1dict begin
+gsave
+llx lly 12 add translate
+/v 0 store
+/x0 x v get 3.362408 add sx cw mul add store
+/y0 y v get bfs th add sub store
+x0 y0 moveto
+(    ) p
 (def) K
 ( __call__\(self, x\):) p n
+(        """) N
+(        Functional form with expanded phi) str n
+(        Gaussian basis functions) N
+(        ) S
+(""") p n
+(        gau = tf.zeros\(shape=\(x.shape[0], 1\)\)) N
+(        """) N
+(        for i in range\(self.num_features\):) str n
+(            gau += tf.math.exp\(-1 * \(\(\(x - self.m[i]\) ** 2\) / \(self.s[i] ** 2\)\)\)) N
+(        gau += self.b) N
+(        ) S
+(""") p n
+(        gau = self.w * tf.math.exp\(-1 * \(\(\(x - self.m\) ** 2\) / \(self.s**2\)\)\)) N
 (        ) S
 (return) K
-( tf.squeeze\(x @ self.w + self.b\)) p n
-() N
+( tf.squeeze\(tf.reduce_sum\(gau, 1\) + self.b\)  ) p
+(# incl mu, sig est) c n
+() p n
 (    @property) N
 (    ) S
 (def) K
@@ -948,8 +1030,10 @@ x0 y0 moveto
 (        ) S
 (return) K
 ( LinearModel\() p n
-(            self.w.numpy\(\).reshape\([self.num_features]\), self.b.numpy\(\).squeeze\() N
-(\)) N
+(            self.m.numpy\(\).reshape\([self.num_features]\),) N
+(            self.s.numpy\(\).reshape\([self.num_features]\),) N
+(            self.w.numpy\(\).reshape\([self.num_features]\),) N
+(            self.b.numpy\(\).squeeze\(\),) N
 (        \)) N
 () N
 () N
@@ -970,8 +1054,10 @@ x0 y0 moveto
 (    tf_rng = tf.random.Generator.from_seed\(tf_seed.entropy\)) N
 () N
 (    data_generating_model = LinearModel\() N
-(        weights=np_rng.integers\(low=0, high=5, size=\(FLAGS.num_features\)\), bias=) N
-(2) N
+(        weights=np_rng.integers\(low=0, high=5, size=\(FLAGS.num_features\)\),) N
+(        bias=2,) N
+(        m=np_rng.integers\(low=0, high=1, size=\(FLAGS.num_features\)\),) N
+(        s=np_rng.integers\(low=0, high=1, size=\(FLAGS.num_features\)\),) N
 (    \)) N
 (    logging.debug\(data_generating_model\)) N
 () N
@@ -982,27 +1068,7 @@ x0 y0 moveto
 (        FLAGS.num_samples,) N
 (        FLAGS.sigma_noise,) N
 (    \)) N
-(main.py) (Page 2/3) (Aug 31, 22 23:20) title
-border
-grestore
-(Printed by Unknown User) rhead
-(./linear-example/main.py) (1/2) (Tuesday September 20, 2022) footer
-end % of iso1dict
-pagesave restore
-showpage
-%%Page: (3) 2
-%%BeginPageSetup
-/pagesave save def
-sh 0 translate 90 rotate
-%%EndPageSetup
-iso1dict begin
-gsave
-llx lly 12 add translate
-/v 0 store
-/x0 x v get 3.362408 add sx cw mul add store
-/y0 y v get bfs th add sub store
-x0 y0 moveto
-() p n
+() N
 (    model = Model\(tf_rng, FLAGS.num_features\)) N
 (    logging.debug\(model.model\)) N
 () N
@@ -1017,8 +1083,17 @@ x0 y0 moveto
 (        with tf.GradientTape\(\) as tape:) N
 (            x, y = data.get_batch\(np_rng, FLAGS.batch_size\)) N
 (            y_hat = model\(x\)) N
-(            loss = 0.5 * tf.reduce_mean\(\(y_hat - y\) ** 2\)) N
-() N
+(main.py) (Page 3/4) (Sep 13, 22 18:13) title
+border
+/v 1 store
+/x0 x v get 3.362408 add sx cw mul add store
+/y0 y v get bfs th add sub store
+x0 y0 moveto
+(            loss = 0.5 * tf.reduce_mean\() p n
+(                \(y_hat - y\) ** 2) N
+(            \)  ) S
+(# implement loss function to minimize) c n
+() p n
 (        grads = tape.gradient\(loss, model.trainable_variables\)) N
 (        optimizer.apply_gradients\(zip\(grads, model.trainable_variables\)\)) N
 () N
@@ -1036,36 +1111,84 @@ x0 y0 moveto
 (\(") p
 (w,    w_hat) str
 ("\)) p n
-(    compare_linear_models\(data.model, model.model\)) N
-() N
+(    """) N
+(    compare_linear_models\(data.model, model.model\)) str n
 (    ) S
-(if) K
-( FLAGS.num_features > 1:) p n
-(        ) S
-(# Only continue to plotting if x is a scalar) c n
-(        exit\(0\)) p n
+(""") p n
 () N
-(    fig, ax = plt.subplots\(1, 1, figsize=\(5, 3\), dpi=200\)) N
-() N
-(    ax.set_title\(") S
-(Linear fit) str
+(    logging.info\(f") S
+(Mu: {model.m}) str
 ("\)) p n
-(    ax.set_xlabel\(") S
+() N
+(    fig, ax = plt.subplots\(1, 2, figsize=\(10, 3\), dpi=200\)) N
+(    ax[0].set_title\(") S
+(Linear Regression on Sinewave) str
+("\)) p n
+(    ax[0].set_xlabel\(") S
 (x) str
 ("\)) p n
-(    ax.set_ylim\(0, np.amax\(data.y\) * 1.5\)) N
-(    h = ax.set_ylabel\(") S
+(    h = ax[0].set_ylabel\(") S
 (y) str
 (", labelpad=10\)) p n
 (    h.set_rotation\(0\)) N
 () N
-(    xs = np.linspace\(0, 1, 10\)) N
+(    ) S
+(# plot with noise) c n
+(    xs = np.linspace\(-1.0, 2, 1000\)) p n
 (    xs = xs[:, np.newaxis]) N
-(    ax.plot\(xs, np.squeeze\(model\(xs\)\), ") S
-(-) str
-(", np.squeeze\(data.x\), data.y, ") p
-(o) str
+(    yhat = model\(xs\)) N
+(    ax[0].plot\(xs, np.squeeze\(yhat\), ") S
+(--) str
+(", color=") p
+(green) str
 ("\)) p n
+(    ax[0].plot\(np.squeeze\(data.x\), data.y, ") S
+(o) str
+(", color=") p
+(blue) str
+("\)) p n
+(    ax[0].set_ylim\(np.amin\(data.y\) * 1.5, np.amax\(data.y\) * 1.5\)) N
+(    ax[0].set_xlim\(0.1, 0.9\)) N
+() N
+(    ) S
+(# plot sine) c n
+(    true_y = np.sin\(2 * np.pi * xs\)) p n
+(    ax[0].plot\(xs, true_y, color=") S
+(red) str
+("\)) p n
+(    ax[0].legend\([") S
+(Regression Estimate) str
+(", ") p
+(Data) str
+(", ") p
+(True Sine) str
+("], fontsize=9\)) p n
+() N
+(    ) S
+(# plot bases) c n
+(    ax[1].set_title\(") p
+(Basis Functions) str
+("\)) p n
+(    ax[1].set_xlabel\(") S
+(x) str
+("\)) p n
+(    h = ax[1].set_ylabel\(") S
+(y) str
+(", labelpad=10\)) p n
+(    h.set_rotation\(0\)) N
+() N
+(    ) S
+(# plot gaussians) c n
+(    gaussians = np.zeros\(\(1000, model.num_features\)\)) p n
+(    ) S
+(for) K
+( j ) p
+(in) K
+( range\(model.num_features\):) p n
+(        gaussians[:, j] = tf.math.exp\() N
+(            -1 * \(\(xs.T - model.m[j]\) ** 2\) / \(model.s[j] ** 2\)) N
+(        \)) N
+(    ax[1].plot\(xs, gaussians\)) N
 () N
 (    plt.tight_layout\(\)) N
 (    plt.savefig\(f") S
@@ -1078,11 +1201,11 @@ x0 y0 moveto
 (__main__) str
 (":) p n
 (    app.run\(main\)) N
-(main.py) (Page 3/3) (Aug 31, 22 23:20) title
+(main.py) (Page 4/4) (Sep 13, 22 18:13) title
 border
 grestore
 (Printed by Unknown User) rhead
-(./linear-example/main.py) (2/2) (Tuesday September 20, 2022) footer
+(./sine-regression/main.py) (2/2) (Tuesday September 20, 2022) footer
 end % of iso1dict
 pagesave restore
 showpage
