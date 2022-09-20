@@ -5,7 +5,7 @@ set -e
 # docker pull tensorflow/tensorflow:2.9.1 # for CPU tf
 docker pull tensorflow/tensorflow:2.9.1-gpu # for GPU tf
 docker buildx build --platform linux/amd64 -t tf .
-docker run -u $(id -u):$(id -g) -t -v=${PWD}:/app tf "flake8 ."
+#docker run -u $(id -u):$(id -g) -t -v=${PWD}:/app tf "flake8 ."
 docker run -u $(id -u):$(id -g) -t -v=${PWD}:/app tf "black ."
 docker run -u $(id -u):$(id -g) -t -v=${PWD}:/app tf "find -iname *.py  -print | parallel 'a2ps {} -o {}.ps  && ps2pdf {}.ps {}.pdf'"
 docker run -u $(id -u):$(id -g) -ti -v=${PWD}:/app tf "${*}"

@@ -2,7 +2,7 @@
 %%Title: main.py
 %%For: Unknown User
 %%Creator: a2ps version 4.14
-%%CreationDate: Thu Sep 15 00:04:22 2022
+%%CreationDate: Tue Sep 20 19:37:47 2022
 %%BoundingBox: 24 24 571 818
 %%DocumentData: Clean7Bit
 %%Orientation: Landscape
@@ -986,7 +986,7 @@ x0 y0 moveto
 border
 grestore
 (Printed by Unknown User) rhead
-(./linear-example/main.py) (1/2) (Thursday September 15, 2022) footer
+(./linear-example/main.py) (1/2) (Tuesday September 20, 2022) footer
 end % of iso1dict
 pagesave restore
 showpage
@@ -1082,7 +1082,7 @@ x0 y0 moveto
 border
 grestore
 (Printed by Unknown User) rhead
-(./linear-example/main.py) (2/2) (Thursday September 15, 2022) footer
+(./linear-example/main.py) (2/2) (Tuesday September 20, 2022) footer
 end % of iso1dict
 pagesave restore
 showpage
