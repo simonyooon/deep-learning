@@ -3,7 +3,7 @@
 1. Install docker. https://docs.docker.com/get-docker/
 2. Reboot your computer.
 
-### Example setup for developing homeworks
+### Example setup for developing projects
 
 ```
 .
@@ -26,7 +26,7 @@ $ ./tf.sh python linear-example/main.py --num_features 1 --num_samples 100 --bat
 
 After running the second command, open `fit.pdf`
 
-### Generate single PDF for submission
+### Generate single PDF
 
 ```
 $ ./tf.sh  gs -sDEVICE=pdfwrite -dNOPAUSE -dBATCH -dSAFER -sOutputFile=linear-example.pdf linear-example/main.py.pdf linear-example/fit.pdf
