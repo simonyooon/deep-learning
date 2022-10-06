@@ -1,6 +1,7 @@
 # Simon Yoon
 # ECE 472 Deep Learning
 # Prof. Curro
+# AG-News Classification
 
 import os
 import pandas as pd
@@ -9,82 +10,90 @@ import tensorflow as tf
 from tensorflow import keras
 from keras.models import Sequential
 from keras.layers import Dense, Dropout, Flatten, Embedding
-from keras.layers import Conv2D, MaxPooling2D, BatchNormalization
-from keras.layers import Reshape
-from keras.layers import Activation
 from keras.preprocessing.text import one_hot
-from keras.preprocessing.sequence import pad_sequences
+from keras.layers import Reshape, Activation
+from tensorflow.keras.preprocessing.sequence import pad_sequences
 from keras import backend as K
 from keras import regularizers
 
 from sklearn.model_selection import train_test_split
 
-from absl import flags
+from absl import app, flags
 
+"""
 FLAGS = flags.FLAGS
 flags.DEFINE_integer("num_classes", 4, "Number of classes")
 flags.DEFINE_integer("num_epochs", 2, "Number of epochs") 
 flags.DEFINE_integer("batch_size", 128, "Number of samples in batch")
+flags.DEFINE_integer("max_max_lenth", 75)
+"""
 
-#read in data
-train_data = pd.read_csv('train.csv',header=None,names=['label','title','desc'])
-test_data = pd.read_csv('test.csv',header=None,names=['label','title','desc'])
-x_train = train_data['title'] + " " + train_data['desc']
-y_train = train_data['label']
-x_test = test_data['title'] + " " + test_data['desc']
-y_test = test_data['label']
-x_train, x_val, y_train, y_val = train_test_split(
-            x_train, y_train, test_size=.1, random_state=123)
+num_classes = 4
+num_epochs = 2
+batch_size = 128
 
-#transform data to hashed integer sequences
+# read in data, process
+train_data = pd.read_csv("train.csv", header=None, names=["label", "title", "desc"])
+test_data = pd.read_csv("test.csv", header=None, names=["label", "title", "desc"])
+x_train = train_data["title"] + " " + train_data["desc"]
+y_train = train_data["label"]
+x_test = test_data["title"] + " " + test_data["desc"]
+y_test = test_data["label"]
+
+# split training data - cross validation
+x_train, x_valid, y_train, y_valid = train_test_split(x_train, y_train, test_size=0.2)
+
+# data to hashed integer sequences, one hot encoding vs. tokenizer
 vocabulary = 20000
-keep = int(vocabulary*.001)
-e_train = [one_hot(d,vocabulary) for d in x_train]
-e_val = [one_hot(d,vocabulary) for d in x_val]
-e_test = [one_hot(d,vocabulary) for d in x_test]
 
-max_length = 75
-p_train = np.array(pad_sequences(e_train,maxlen=max_length,padding='post'))
-p_val = np.array(pad_sequences(e_val,maxlen=max_length,padding='post'))
-p_test = np.array(pad_sequences(e_test,maxlen=max_length,padding='post'))
+e_x_train = [one_hot(d, vocabulary) for d in x_train]
+e_x_valid = [one_hot(d, vocabulary) for d in x_valid]
+e_x_test = [one_hot(d, vocabulary) for d in x_test]
 
-trainLen = p_train.shape[0]
-valLen = p_val.shape[0]
-testLen = p_test.shape[0]
+max_len = int(x_train.str.len().quantile(0.95))
+p_train = np.array(pad_sequences(e_x_train, maxlen=max_len, padding="post"))
+p_valid = np.array(pad_sequences(e_x_valid, maxlen=max_len, padding="post"))
+p_test = np.array(pad_sequences(e_x_test, maxlen=max_len, padding="post"))
+
+train_size = p_train.shape[0]
+valid_size = p_valid.shape[0]
+test_size = p_test.shape[0]
 
 p_train = p_train.flatten()
-p_val = p_val.flatten()
+p_valid = p_valid.flatten()
 p_test = p_test.flatten()
-trainBin = np.bincount(p_train)
-trainTops = [trainBin[i] for i in trainBin.argsort()[:-keep]]
 
-p_train = p_train.reshape(trainLen,max_length)
-p_val = p_val.reshape(valLen,max_length)
-p_test = p_test.reshape(testLen,max_length)
+p_train = p_train.reshape(train_size, max_len)
+p_valid = p_valid.reshape(valid_size, max_len)
+p_test = p_test.reshape(test_size, max_len)
 
-y_train[y_train==4] = 0
-y_val[y_val==4] = 0
-y_test[y_test==4] = 0
-y_train = keras.utils.to_categorical(y_train, FLAGS.num_classes)
-y_val = keras.utils.to_categorical(y_val, FLAGS.num_classes)
-y_test = keras.utils.to_categorical(y_test, FLAGS.num_classes)
+y_train[y_train == 4] = 0
+y_valid[y_valid == 4] = 0
+y_test[y_test == 4] = 0
+
+# convert vectors to binary class matrices
+y_train = keras.utils.to_categorical(y_train, num_classes)
+y_valid = keras.utils.to_categorical(y_valid, num_classes)
+y_test = keras.utils.to_categorical(y_test, num_classes)
 
 model = Sequential()
-model.add(Embedding(vocabulary, 4, input_length=max_length,name='embed'))
+model.add(Embedding(vocabulary, 4, input_length=max_len))
 model.add(Flatten())
 model.add(Dropout(0.4))
-model.add(Dense(FLAGS.num_classes, activation='softmax'))
+model.add(Dense(num_classes, activation="softmax"))
 
-optimizer = keras.optimizers.Adam()
-model.compile(loss=keras.losses.categorical_crossentropy,
-              optimizer=optimizer,
-              metrics=['accuracy'])
+model.compile(loss="categorical_crossentropy", optimizer="adam", metrics=["accuracy"])
 
-model.fit(p_train, y_train,
-          batch_size=FLAGS.batch_size,
-          epochs=FLAGS.num_epochs,
-          verbose=1,
-          validation_data=(p_val, y_val))
+model.summary()
+
+model.fit(
+    p_train,
+    y_train,
+    batch_size=batch_size,
+    epochs=num_epochs,
+    verbose=1,
+    validation_data=(p_valid, y_valid),
+)
 score = model.evaluate(p_test, y_test, verbose=0)
-print('Test loss:', score[0])
-print('Test accuracy:', score[1])
+print("Test loss:", score[0])
+print("Test accuracy:", score[1])
